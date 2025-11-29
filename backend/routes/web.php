@@ -2,10 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+use Illuminate\Support\Facades\File;
 
 // Serve storage files (fallback for Windows symlink issues)
 Route::get('/storage/{path}', function ($path) {
@@ -22,3 +19,16 @@ Route::get('/storage/{path}', function ($path) {
         ->header('Content-Type', $type)
         ->header('Cache-Control', 'public, max-age=31536000');
 })->where('path', '.*');
+
+// Serve SPA for all other routes (frontend)
+// This catches all routes that don't match API or storage
+Route::get('/{any?}', function () {
+    $indexPath = public_path('index.html');
+    
+    if (File::exists($indexPath)) {
+        return File::get($indexPath);
+    }
+    
+    // Fallback to Laravel welcome page if SPA not built
+    return view('welcome');
+})->where('any', '^(?!api).*$');
