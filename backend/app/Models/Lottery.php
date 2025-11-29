@@ -12,10 +12,27 @@ class Lottery extends Model
 {
     use HasFactory;
 
+    /**
+     * Available product categories.
+     */
+    public const CATEGORIES = [
+        'electronics' => 'Electronics',
+        'gaming' => 'Gaming',
+        'fashion' => 'Fashion & Accessories',
+        'home' => 'Home & Garden',
+        'sports' => 'Sports & Outdoors',
+        'automotive' => 'Automotive',
+        'collectibles' => 'Collectibles & Art',
+        'jewelry' => 'Jewelry & Watches',
+        'travel' => 'Travel & Experiences',
+        'other' => 'Other',
+    ];
+
     protected $fillable = [
         'user_id',
         'title',
         'description',
+        'category',
         'product_value',
         'ticket_price',
         'total_tickets',

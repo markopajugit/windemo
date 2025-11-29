@@ -19,23 +19,23 @@
       </router-link>
     </div>
 
-    <!-- Tickets List -->
+    <!-- Grouped Tickets List -->
     <div v-else class="space-y-4">
       <div
-        v-for="ticket in tickets"
-        :key="ticket.id"
+        v-for="group in groupedTickets"
+        :key="group.lottery.id"
         :class="[
           'glass rounded-xl p-6 border',
-          isWinner(ticket) ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-700/50'
+          isWinnerGroup(group) ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-700/50'
         ]"
       >
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <!-- Image -->
           <div class="w-20 h-20 bg-slate-700 rounded-xl overflow-hidden shrink-0">
             <img
-              v-if="ticket.lottery?.images?.length"
-              :src="ticket.lottery.images[0].url"
-              :alt="ticket.lottery?.title"
+              v-if="group.lottery?.images?.length"
+              :src="group.lottery.images[0].url"
+              :alt="group.lottery?.title"
               class="w-full h-full object-cover"
             />
           </div>
@@ -43,9 +43,9 @@
           <!-- Info -->
           <div class="flex-1 min-w-0">
             <div class="flex items-center space-x-2 mb-1">
-              <h3 class="text-lg font-semibold text-white truncate">{{ ticket.lottery?.title }}</h3>
+              <h3 class="text-lg font-semibold text-white truncate">{{ group.lottery?.title }}</h3>
               <span
-                v-if="isWinner(ticket)"
+                v-if="isWinnerGroup(group)"
                 class="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500 text-white shrink-0"
               >
                 Winner!
@@ -53,25 +53,25 @@
             </div>
             <div class="flex flex-wrap items-center gap-4 text-sm">
               <span class="text-slate-400">
-                Ticket #<span class="text-white font-mono">{{ ticket.ticket_number }}</span>
+                <span class="text-white font-semibold">{{ group.count }}</span> {{ group.count === 1 ? 'ticket' : 'tickets' }}
               </span>
               <span class="text-slate-400">
-                Purchased: {{ formatDate(ticket.purchased_at) }}
+                Purchased: {{ formatDate(group.firstPurchase) }}
               </span>
               <span
                 :class="[
                   'px-2 py-0.5 rounded-full text-xs font-medium',
-                  lotteryStatusClass(ticket.lottery?.status)
+                  lotteryStatusClass(group.lottery?.status)
                 ]"
               >
-                {{ lotteryStatusLabel(ticket.lottery?.status) }}
+                {{ lotteryStatusLabel(group.lottery?.status) }}
               </span>
             </div>
           </div>
 
           <!-- View Button -->
           <router-link
-            :to="`/lottery/${ticket.lottery?.id}`"
+            :to="`/lottery/${group.lottery?.id}`"
             class="btn-outline py-2 px-4 shrink-0"
           >
             View Lottery
@@ -79,7 +79,7 @@
         </div>
 
         <!-- Winner Celebration -->
-        <div v-if="isWinner(ticket)" class="mt-4 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+        <div v-if="isWinnerGroup(group)" class="mt-4 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
           <div class="flex items-center space-x-3">
             <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useLotteryStore } from '../../stores/lottery'
 import { useAuthStore } from '../../stores/auth'
 
@@ -104,8 +104,40 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const tickets = ref([])
 
-const isWinner = (ticket) => {
-  return ticket.lottery?.winner_user_id === authStore.user?.id
+// Group tickets by lottery
+const groupedTickets = computed(() => {
+  const groups = {}
+  
+  for (const ticket of tickets.value) {
+    const lotteryId = ticket.lottery?.id
+    if (!lotteryId) continue
+    
+    if (!groups[lotteryId]) {
+      groups[lotteryId] = {
+        lottery: ticket.lottery,
+        count: 0,
+        firstPurchase: ticket.purchased_at,
+        tickets: []
+      }
+    }
+    
+    groups[lotteryId].count++
+    groups[lotteryId].tickets.push(ticket)
+    
+    // Track earliest purchase date
+    if (new Date(ticket.purchased_at) < new Date(groups[lotteryId].firstPurchase)) {
+      groups[lotteryId].firstPurchase = ticket.purchased_at
+    }
+  }
+  
+  // Convert to array and sort by most recent purchase first
+  return Object.values(groups).sort((a, b) => 
+    new Date(b.firstPurchase) - new Date(a.firstPurchase)
+  )
+})
+
+const isWinnerGroup = (group) => {
+  return group.lottery?.winner_user_id === authStore.user?.id
 }
 
 const formatDate = (date) => {

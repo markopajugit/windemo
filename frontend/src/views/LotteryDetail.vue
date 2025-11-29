@@ -59,7 +59,7 @@
         <!-- Lottery Info -->
         <div class="space-y-6">
           <!-- Status Badge -->
-          <div class="flex items-center space-x-3">
+          <div class="flex flex-wrap items-center gap-3">
             <span
               :class="[
                 'px-4 py-1 rounded-full text-sm font-semibold',
@@ -67,6 +67,12 @@
               ]"
             >
               {{ statusLabel }}
+            </span>
+            <span
+              v-if="lottery.category"
+              class="px-4 py-1 rounded-full text-sm font-semibold bg-slate-700 text-slate-200 border border-slate-600"
+            >
+              {{ categoryLabel }}
             </span>
             <span
               v-if="lottery.charity_percentage > 0"
@@ -198,6 +204,20 @@ const lottery = ref(null)
 const activeImage = ref(0)
 const showPurchaseModal = ref(false)
 
+// Category labels mapping
+const categoryLabels = {
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
+}
+
 const progressPercentage = computed(() => {
   if (!lottery.value?.total_tickets) return 0
   return Math.round((lottery.value.tickets_sold || 0) / lottery.value.total_tickets * 100)
@@ -206,6 +226,10 @@ const progressPercentage = computed(() => {
 const availableTickets = computed(() => {
   if (!lottery.value) return 0
   return lottery.value.total_tickets - (lottery.value.tickets_sold || 0)
+})
+
+const categoryLabel = computed(() => {
+  return categoryLabels[lottery.value?.category] || lottery.value?.category || 'Other'
 })
 
 const statusClass = computed(() => {

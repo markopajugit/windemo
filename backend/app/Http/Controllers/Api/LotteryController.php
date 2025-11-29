@@ -31,6 +31,11 @@ class LotteryController extends Controller
             });
         }
 
+        // Category filter
+        if ($request->category && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
         // Sort
         switch ($request->sort) {
             case 'ending_soon':
@@ -52,6 +57,14 @@ class LotteryController extends Controller
         $lotteries = $query->paginate(12);
 
         return response()->json($lotteries);
+    }
+
+    /**
+     * Get available categories.
+     */
+    public function categories(): JsonResponse
+    {
+        return response()->json(Lottery::CATEGORIES);
     }
 
     /**
@@ -128,6 +141,7 @@ class LotteryController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:5000'],
+            'category' => ['required', 'string', 'in:' . implode(',', array_keys(Lottery::CATEGORIES))],
             'product_value' => ['required', 'numeric', 'min:1', 'max:100000'],
             'ticket_price' => ['required', 'numeric', 'min:0.50', 'max:1000'],
             'total_tickets' => ['required', 'integer', 'min:10', 'max:10000'],
@@ -143,6 +157,7 @@ class LotteryController extends Controller
                 'user_id' => $request->user()->id,
                 'title' => $validated['title'],
                 'description' => $validated['description'],
+                'category' => $validated['category'],
                 'product_value' => $validated['product_value'],
                 'ticket_price' => $validated['ticket_price'],
                 'total_tickets' => $validated['total_tickets'],
@@ -192,6 +207,7 @@ class LotteryController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:5000'],
+            'category' => ['required', 'string', 'in:' . implode(',', array_keys(Lottery::CATEGORIES))],
             'product_value' => ['required', 'numeric', 'min:1', 'max:100000'],
             'ticket_price' => ['required', 'numeric', 'min:0.50', 'max:1000'],
             'total_tickets' => ['required', 'integer', 'min:10', 'max:10000'],
@@ -206,6 +222,7 @@ class LotteryController extends Controller
             $lottery->update([
                 'title' => $validated['title'],
                 'description' => $validated['description'],
+                'category' => $validated['category'],
                 'product_value' => $validated['product_value'],
                 'ticket_price' => $validated['ticket_price'],
                 'total_tickets' => $validated['total_tickets'],

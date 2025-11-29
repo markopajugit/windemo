@@ -84,6 +84,13 @@
                 <label class="block text-slate-400 text-sm mb-1">Title</label>
                 <p class="text-white">{{ lottery.title }}</p>
               </div>
+
+              <div>
+                <label class="block text-slate-400 text-sm mb-1">Category</label>
+                <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-slate-700 text-slate-200 border border-slate-600">
+                  {{ getCategoryLabel(lottery.category) }}
+                </span>
+              </div>
               
               <div>
                 <label class="block text-slate-400 text-sm mb-1">Description</label>
@@ -207,6 +214,22 @@ const formatDateTime = (date) => new Date(date).toLocaleString('en-US', {
   month: 'short', day: 'numeric', year: 'numeric',
   hour: '2-digit', minute: '2-digit'
 })
+
+// Category labels mapping
+const categoryLabels = {
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
+}
+
+const getCategoryLabel = (category) => categoryLabels[category] || category || 'Other'
 
 const statusClass = (status) => {
   switch (status) {

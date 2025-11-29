@@ -18,6 +18,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Public lottery routes
 Route::get('/lotteries', [LotteryController::class, 'index']);
+Route::get('/lotteries/categories', [LotteryController::class, 'categories']);
 Route::get('/lotteries/popular', [LotteryController::class, 'popular']);
 Route::get('/lotteries/upcoming', [LotteryController::class, 'upcoming']);
 Route::get('/lotteries/ended', [LotteryController::class, 'ended']);

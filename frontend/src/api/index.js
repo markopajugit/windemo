@@ -48,6 +48,7 @@ export const authApi = {
 export const lotteryApi = {
   // Public
   getAll: (params) => api.get('/lotteries', { params }),
+  getCategories: () => api.get('/lotteries/categories'),
   getPopular: () => api.get('/lotteries/popular'),
   getUpcoming: () => api.get('/lotteries/upcoming'),
   getEnded: () => api.get('/lotteries/ended'),

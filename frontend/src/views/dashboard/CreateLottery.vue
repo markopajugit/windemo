@@ -31,6 +31,20 @@
         </div>
 
         <div>
+          <label class="block text-slate-300 text-sm font-medium mb-2">Category *</label>
+          <select
+            v-model="form.category"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select a category</option>
+            <option v-for="(label, value) in categories" :key="value" :value="value">
+              {{ label }}
+            </option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-slate-300 text-sm font-medium mb-2">Description *</label>
           <textarea
             v-model="form.description"
@@ -176,19 +190,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLotteryStore } from '../../stores/lottery'
 import { useAuthStore } from '../../stores/auth'
+import { lotteryApi } from '../../api'
 import ImageUpload from '../../components/ImageUpload.vue'
 
 const router = useRouter()
 const lotteryStore = useLotteryStore()
 const authStore = useAuthStore()
 
+// Categories - will be fetched from API
+const categories = ref({
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
+})
+
 const form = ref({
   title: '',
   description: '',
+  category: '',
   product_value: null,
   ticket_price: null,
   total_tickets: null,
@@ -196,6 +226,16 @@ const form = ref({
   starts_at: '',
   ends_at: '',
   images: [],
+})
+
+// Fetch categories on mount
+onMounted(async () => {
+  try {
+    const response = await lotteryApi.getCategories()
+    categories.value = response.data
+  } catch (e) {
+    // Use default categories if fetch fails
+  }
 })
 
 const loading = ref(false)
@@ -239,6 +279,7 @@ const handleSubmit = async () => {
     const formData = new FormData()
     formData.append('title', form.value.title)
     formData.append('description', form.value.description)
+    formData.append('category', form.value.category)
     formData.append('product_value', form.value.product_value)
     formData.append('ticket_price', form.value.ticket_price)
     formData.append('total_tickets', form.value.total_tickets)

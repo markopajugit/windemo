@@ -186,70 +186,68 @@ php artisan lotteries:select-winners
 
 ## Production Deployment
 
-### Build Frontend
+### Quick Deploy (Recommended)
 
-**Important:** The `dist` folder doesn't exist until you build the frontend. You need to create it first:
+Use the deployment script to build and deploy everything:
 
-1. Navigate to frontend directory:
+```bash
+./deploy.sh
+```
+
+This script will:
+1. Build the Vue frontend (`npm run build`)
+2. Copy the built files to Laravel's `public` directory
+3. Install PHP dependencies
+4. Cache Laravel configuration
+5. Run database migrations
+
+### Manual Deployment
+
+If you prefer to deploy manually:
+
+1. **Build the frontend:**
    ```bash
    cd frontend
-   ```
-
-2. Build the production bundle:
-   ```bash
+   npm install
    npm run build
    ```
-   
-   This command will:
-   - Create a `dist` folder (if it doesn't exist)
-   - Bundle and optimize all Vue components, assets, and dependencies
-   - Output production-ready static files to `frontend/dist/`
 
-3. Verify the build:
+2. **Copy frontend to backend:**
    ```bash
-   ls dist  # or `dir dist` on Windows
+   cp -r frontend/dist/* backend/public/
    ```
-   You should see `index.html` and bundled JavaScript/CSS files.
+
+3. **Setup backend:**
+   ```bash
+   cd backend
+   composer install --no-dev --optimize-autoloader
+   php artisan config:cache
+   php artisan view:cache
+   php artisan migrate --force
+   ```
 
 ### Apache Configuration
 
-**Option 1: Frontend and Backend on Same Domain (Recommended)**
-
-Point Apache's DocumentRoot to the frontend's `dist` folder and proxy API requests to Laravel:
+Point Apache's DocumentRoot to Laravel's `public` folder. Laravel will serve both the API and the SPA:
 
 ```apache
 <VirtualHost *:80>
     ServerName yourdomain.com
-    DocumentRoot /path/to/windemo/frontend/dist
+    DocumentRoot /path/to/windemo/backend/public
 
-    <Directory /path/to/windemo/frontend/dist>
+    <Directory /path/to/windemo/backend/public>
         Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
-        
-        # Handle Vue Router (SPA)
-        RewriteEngine On
-        RewriteBase /
-        RewriteRule ^index\.html$ - [L]
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule . /index.html [L]
     </Directory>
-
-    # Proxy API requests to Laravel backend
-    ProxyPreserveHost On
-    ProxyPass /api http://localhost:8000/api
-    ProxyPassReverse /api http://localhost:8000/api
-    ProxyPass /storage http://localhost:8000/storage
-    ProxyPassReverse /storage http://localhost:8000/storage
 </VirtualHost>
 ```
 
-**Option 2: Frontend and Backend on Different Domains/Subdomains**
-
-- Frontend: Point Apache to `frontend/dist` folder
-- Backend: Point Apache to `backend/public` folder (standard Laravel setup)
-- Configure CORS in Laravel to allow frontend domain
+**Important:** Make sure `mod_rewrite` is enabled:
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
 
 ### Backend Setup
 
@@ -259,7 +257,6 @@ Point Apache's DocumentRoot to the frontend's `dist` folder and proxy API reques
 4. Configure mail driver for email verification
 5. Set up Redis for caching/sessions (optional)
 6. Configure queue driver for background jobs (optional)
-7. Ensure Laravel is running (via PHP-FPM or mod_php)
 
 ## License
 

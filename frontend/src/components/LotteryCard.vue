@@ -29,6 +29,14 @@
         {{ statusLabel }}
       </div>
 
+      <!-- Category Badge -->
+      <div 
+        v-if="lottery.category"
+        class="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-slate-900/80 text-slate-200 backdrop-blur-sm border border-slate-600/50"
+      >
+        {{ categoryLabel }}
+      </div>
+
       <!-- Charity Badge -->
       <div 
         v-if="lottery.charity_percentage > 0"
@@ -117,10 +125,28 @@ const props = defineProps({
   },
 })
 
+// Category labels mapping
+const categoryLabels = {
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
+}
+
 // Check if lottery hasn't started yet (upcoming)
 const isUpcoming = computed(() => {
   if (!props.lottery.starts_at) return false
   return new Date(props.lottery.starts_at) > new Date()
+})
+
+const categoryLabel = computed(() => {
+  return categoryLabels[props.lottery.category] || props.lottery.category || 'Other'
 })
 
 const progressPercentage = computed(() => {

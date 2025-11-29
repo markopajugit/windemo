@@ -36,6 +36,20 @@
         </div>
 
         <div>
+          <label class="block text-slate-300 text-sm font-medium mb-2">Category *</label>
+          <select
+            v-model="form.category"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select a category</option>
+            <option v-for="(label, value) in categories" :key="value" :value="value">
+              {{ label }}
+            </option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-slate-300 text-sm font-medium mb-2">Description *</label>
           <textarea
             v-model="form.description"
@@ -172,6 +186,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLotteryStore } from '../../stores/lottery'
+import { lotteryApi } from '../../api'
 import ImageUpload from '../../components/ImageUpload.vue'
 
 const route = useRoute()
@@ -184,9 +199,24 @@ const error = ref('')
 const lottery = ref(null)
 const existingImages = ref([])
 
+// Categories
+const categories = ref({
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
+})
+
 const form = ref({
   title: '',
   description: '',
+  category: '',
   product_value: null,
   ticket_price: null,
   total_tickets: null,
@@ -211,6 +241,7 @@ const handleSubmit = async () => {
     formData.append('_method', 'PUT')
     formData.append('title', form.value.title)
     formData.append('description', form.value.description)
+    formData.append('category', form.value.category)
     formData.append('product_value', form.value.product_value)
     formData.append('ticket_price', form.value.ticket_price)
     formData.append('total_tickets', form.value.total_tickets)
@@ -240,12 +271,21 @@ const handleSubmit = async () => {
 
 onMounted(async () => {
   try {
+    // Fetch categories
+    try {
+      const response = await lotteryApi.getCategories()
+      categories.value = response.data
+    } catch (e) {
+      // Use default categories
+    }
+
     lottery.value = await lotteryStore.fetchLottery(route.params.id)
     
     if (lottery.value) {
       form.value = {
         title: lottery.value.title,
         description: lottery.value.description,
+        category: lottery.value.category || 'other',
         product_value: parseFloat(lottery.value.product_value),
         ticket_price: parseFloat(lottery.value.ticket_price),
         total_tickets: lottery.value.total_tickets,

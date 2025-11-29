@@ -11,13 +11,20 @@
             v-model="search"
             type="text"
             placeholder="Search lotteries..."
-            class="input-field !pl-12 w-full sm:w-96"
+            class="input-field !pl-12 w-full sm:w-64"
             @input="debouncedSearch"
           />
           <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
+
+        <select v-model="category" @change="fetchLotteries" class="input-field w-full sm:w-48">
+          <option value="all">All Categories</option>
+          <option v-for="(label, value) in categories" :key="value" :value="value">
+            {{ label }}
+          </option>
+        </select>
         
         <select v-model="sortBy" @change="fetchLotteries" class="input-field w-full sm:w-48">
           <option value="newest">Newest First</option>
@@ -201,6 +208,7 @@ import LotteryCard from '../components/LotteryCard.vue'
 const lotteryStore = useLotteryStore()
 const search = ref('')
 const sortBy = ref('newest')
+const category = ref('all')
 const loading = ref(true)
 const activeTab = ref('live')
 const lotteries = ref([])
@@ -210,6 +218,20 @@ const pagination = ref({
   currentPage: 1,
   lastPage: 1,
   total: 0,
+})
+
+// Categories
+const categories = ref({
+  electronics: 'Electronics',
+  gaming: 'Gaming',
+  fashion: 'Fashion & Accessories',
+  home: 'Home & Garden',
+  sports: 'Sports & Outdoors',
+  automotive: 'Automotive',
+  collectibles: 'Collectibles & Art',
+  jewelry: 'Jewelry & Watches',
+  travel: 'Travel & Experiences',
+  other: 'Other',
 })
 
 let searchTimeout = null
@@ -241,6 +263,7 @@ const fetchLotteries = async (page = 1) => {
       page,
       search: search.value,
       sort: sortBy.value,
+      category: category.value,
     })
     lotteries.value = lotteryStore.lotteries
     pagination.value = lotteryStore.pagination
@@ -281,8 +304,17 @@ const goToPage = (page) => {
   }
 }
 
+const fetchCategories = async () => {
+  try {
+    const response = await lotteryApi.getCategories()
+    categories.value = response.data
+  } catch (e) {
+    // Use default categories if fetch fails
+  }
+}
+
 onMounted(async () => {
-  await Promise.all([fetchLotteries(), fetchUpcoming(), fetchEnded()])
+  await Promise.all([fetchLotteries(), fetchUpcoming(), fetchEnded(), fetchCategories()])
   // Auto-switch to upcoming tab if no live lotteries but has upcoming
   if (lotteries.value.length === 0 && upcomingLotteries.value.length > 0) {
     activeTab.value = 'upcoming'
