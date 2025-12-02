@@ -20,7 +20,7 @@
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        Back
+        {{ $t('common.back') }}
       </button>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -92,7 +92,7 @@
                 <p class="text-2xl font-bold text-white">€{{ formatPrice(lottery.product_value) }}</p>
               </div>
               <div>
-                <p class="text-slate-400 text-sm">Ticket Price</p>
+                <p class="text-slate-400 text-sm">{{ $t('lottery.ticketPrice') }}</p>
                 <p class="text-2xl font-bold text-indigo-400">€{{ formatPrice(lottery.ticket_price) }}</p>
               </div>
             </div>
@@ -107,7 +107,7 @@
           <!-- Progress -->
           <div class="glass rounded-2xl p-6 border border-slate-700/50">
             <div class="flex justify-between text-sm text-slate-400 mb-2">
-              <span>Tickets Sold</span>
+              <span>{{ $t('lottery.ticketsSold') }}</span>
               <span>{{ lottery.tickets_sold || 0 }} / {{ lottery.total_tickets }}</span>
             </div>
             <div class="h-3 bg-slate-700 rounded-full overflow-hidden">
@@ -116,7 +116,7 @@
                 :style="{ width: `${progressPercentage}%` }"
               ></div>
             </div>
-            <p class="text-slate-500 text-sm mt-2">{{ availableTickets }} tickets available</p>
+            <p class="text-slate-500 text-sm mt-2">{{ $t('common.ticketsAvailable', { count: availableTickets }) }}</p>
           </div>
 
           <!-- Winner Info -->
@@ -128,7 +128,7 @@
                 </svg>
               </div>
               <div>
-                <p class="text-emerald-400 text-sm font-medium">Winner</p>
+                <p class="text-emerald-400 text-sm font-medium">{{ $t('lottery.winner') }}</p>
                 <p class="text-white font-semibold">{{ lottery.winner.name }}</p>
               </div>
             </div>
@@ -141,7 +141,7 @@
             class="w-full btn-primary text-lg py-4"
             :disabled="!authStore.isAuthenticated"
           >
-            {{ authStore.isAuthenticated ? 'Buy Tickets' : 'Login to Buy Tickets' }}
+            {{ authStore.isAuthenticated ? $t('lottery.buyTickets') : $t('lottery.loginToBuy') }}
           </button>
           
           <router-link
@@ -154,13 +154,13 @@
 
           <!-- Description -->
           <div class="space-y-4">
-            <h2 class="text-xl font-semibold text-white">Description</h2>
+            <h2 class="text-xl font-semibold text-white">{{ $t('lottery.description') }}</h2>
             <p class="text-slate-300 whitespace-pre-wrap">{{ lottery.description }}</p>
           </div>
 
           <!-- Seller Info -->
           <div class="glass rounded-2xl p-6 border border-slate-700/50">
-            <p class="text-slate-400 text-sm mb-2">Listed by</p>
+            <p class="text-slate-400 text-sm mb-2">{{ $t('lottery.createdBy') }}</p>
             <div class="flex items-center space-x-3">
               <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
                 <span class="text-white font-semibold">

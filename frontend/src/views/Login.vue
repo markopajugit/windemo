@@ -6,13 +6,13 @@
           <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span class="text-white font-bold text-2xl">W</span>
           </div>
-          <h1 class="text-2xl font-bold text-white">Welcome Back</h1>
-          <p class="text-slate-400 mt-2">Sign in to your account</p>
+          <h1 class="text-2xl font-bold text-white">{{ $t('auth.loginTitle') }}</h1>
+          <p class="text-slate-400 mt-2">{{ $t('auth.loginSubtitle') }}</p>
         </div>
 
         <form @submit.prevent="handleLogin" class="space-y-6">
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Email</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.email') }}</label>
             <input
               v-model="form.email"
               type="email"
@@ -23,7 +23,7 @@
           </div>
 
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Password</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.password') }}</label>
             <input
               v-model="form.password"
               type="password"
@@ -47,16 +47,16 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Signing in...
+              {{ $t('common.loading') }}
             </span>
-            <span v-else>Sign In</span>
+            <span v-else>{{ $t('auth.loginButton') }}</span>
           </button>
         </form>
 
         <p class="text-center text-slate-400 mt-6">
-          Don't have an account?
+          {{ $t('auth.noAccount') }}
           <router-link to="/register" class="text-indigo-400 hover:text-indigo-300 font-medium">
-            Sign up
+            {{ $t('auth.signUpLink') }}
           </router-link>
         </p>
       </div>

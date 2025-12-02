@@ -13,28 +13,27 @@
             </span>
           </div>
           <p class="text-slate-400 max-w-md">
-            The premier platform for hosting and participating in fair, transparent lotteries. 
-            Win amazing prizes while supporting charitable causes.
+            {{ $t('footer.tagline') }}
           </p>
         </div>
 
         <!-- Quick Links -->
         <div>
-          <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+          <h3 class="text-white font-semibold mb-4">{{ $t('footer.quickLinks') }}</h3>
           <ul class="space-y-2">
             <li>
               <router-link to="/browse" class="text-slate-400 hover:text-white transition-colors">
-                Browse Lotteries
+                {{ $t('nav.browse') }}
               </router-link>
             </li>
             <li>
               <router-link to="/dashboard/create-lottery" class="text-slate-400 hover:text-white transition-colors">
-                Create Lottery
+                {{ $t('home.createLottery') }}
               </router-link>
             </li>
             <li>
               <a href="#" class="text-slate-400 hover:text-white transition-colors">
-                How It Works
+                {{ $t('home.howItWorks') }}
               </a>
             </li>
           </ul>
@@ -42,21 +41,21 @@
 
         <!-- Support -->
         <div>
-          <h3 class="text-white font-semibold mb-4">Support</h3>
+          <h3 class="text-white font-semibold mb-4">{{ $t('footer.legal') }}</h3>
           <ul class="space-y-2">
             <li>
               <a href="#" class="text-slate-400 hover:text-white transition-colors">
-                Help Center
+                {{ $t('footer.termsOfService') }}
               </a>
             </li>
             <li>
               <a href="#" class="text-slate-400 hover:text-white transition-colors">
-                Terms of Service
+                {{ $t('footer.privacyPolicy') }}
               </a>
             </li>
             <li>
               <a href="#" class="text-slate-400 hover:text-white transition-colors">
-                Privacy Policy
+                {{ $t('footer.cookiePolicy') }}
               </a>
             </li>
           </ul>
@@ -64,7 +63,7 @@
       </div>
 
       <div class="border-t border-slate-700/50 mt-8 pt-8 text-center text-slate-500">
-        <p>&copy; {{ new Date().getFullYear() }} win24. All rights reserved.</p>
+        <p>&copy; {{ new Date().getFullYear() }} win24. {{ $t('footer.allRightsReserved') }}</p>
       </div>
     </div>
   </footer>

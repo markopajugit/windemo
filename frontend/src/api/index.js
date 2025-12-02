@@ -71,6 +71,12 @@ export const ticketApi = {
   getUserTickets: () => api.get('/user/tickets'),
 }
 
+// Payment API
+export const paymentApi = {
+  createCheckoutSession: (lotteryId, quantity) => api.post(`/checkout/${lotteryId}/session`, { quantity }),
+  verifySession: (sessionId) => api.get('/checkout/verify', { params: { session_id: sessionId } }),
+}
+
 // Admin API
 export const adminApi = {
   getAllLotteries: (params) => api.get('/admin/lotteries', { params }),

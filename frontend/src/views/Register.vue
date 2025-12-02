@@ -6,13 +6,13 @@
           <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span class="text-white font-bold text-2xl">W</span>
           </div>
-          <h1 class="text-2xl font-bold text-white">Create Account</h1>
-          <p class="text-slate-400 mt-2">Join win24 and start winning!</p>
+          <h1 class="text-2xl font-bold text-white">{{ $t('auth.registerTitle') }}</h1>
+          <p class="text-slate-400 mt-2">{{ $t('auth.registerSubtitle') }}</p>
         </div>
 
         <form @submit.prevent="handleRegister" class="space-y-6">
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Name</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.name') }}</label>
             <input
               v-model="form.name"
               type="text"
@@ -23,7 +23,7 @@
           </div>
 
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Email</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.email') }}</label>
             <input
               v-model="form.email"
               type="email"
@@ -34,7 +34,7 @@
           </div>
 
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Password</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.password') }}</label>
             <input
               v-model="form.password"
               type="password"
@@ -43,11 +43,11 @@
               class="input-field"
               placeholder="••••••••"
             />
-            <p class="text-slate-500 text-xs mt-1">Minimum 8 characters</p>
+            <p class="text-slate-500 text-xs mt-1">{{ $t('errors.passwordTooShort') }}</p>
           </div>
 
           <div>
-            <label class="block text-slate-300 text-sm font-medium mb-2">Confirm Password</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('auth.confirmPassword') }}</label>
             <input
               v-model="form.password_confirmation"
               type="password"
@@ -71,16 +71,16 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Creating account...
+              {{ $t('common.loading') }}
             </span>
-            <span v-else>Create Account</span>
+            <span v-else>{{ $t('auth.registerButton') }}</span>
           </button>
         </form>
 
         <p class="text-center text-slate-400 mt-6">
-          Already have an account?
+          {{ $t('auth.hasAccount') }}
           <router-link to="/login" class="text-indigo-400 hover:text-indigo-300 font-medium">
-            Sign in
+            {{ $t('auth.signInLink') }}
           </router-link>
         </p>
       </div>

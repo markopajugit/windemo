@@ -19,19 +19,57 @@
             class="text-slate-300 hover:text-white transition-colors"
             :class="{ 'text-white font-semibold': $route.name === 'home' }"
           >
-            Home
+            {{ $t('nav.home') }}
           </router-link>
           <router-link 
             to="/browse" 
             class="text-slate-300 hover:text-white transition-colors"
             :class="{ 'text-white font-semibold': $route.name === 'browse' }"
           >
-            Browse Lotteries
+            {{ $t('nav.browse') }}
           </router-link>
         </div>
 
-        <!-- Auth Buttons -->
+        <!-- Language Switcher & Auth Buttons -->
         <div class="flex items-center space-x-4">
+          <!-- Language Switcher -->
+          <div class="relative" ref="langMenuRef">
+            <button 
+              @click="showLangMenu = !showLangMenu"
+              class="flex items-center space-x-1 px-2 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors"
+            >
+              <span class="text-lg">{{ currentLocale === 'et' ? '🇪🇪' : '🇬🇧' }}</span>
+              <span class="text-sm font-medium hidden sm:block">{{ currentLocale.toUpperCase() }}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <transition name="dropdown">
+              <div 
+                v-if="showLangMenu" 
+                class="absolute right-0 mt-2 w-32 bg-slate-800 rounded-xl shadow-xl py-1 border border-slate-600 z-50"
+              >
+                <button 
+                  @click="switchLocale('en')"
+                  class="w-full flex items-center space-x-2 px-4 py-2 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
+                  :class="{ 'bg-slate-700/50 text-white': currentLocale === 'en' }"
+                >
+                  <span>🇬🇧</span>
+                  <span>English</span>
+                </button>
+                <button 
+                  @click="switchLocale('et')"
+                  class="w-full flex items-center space-x-2 px-4 py-2 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
+                  :class="{ 'bg-slate-700/50 text-white': currentLocale === 'et' }"
+                >
+                  <span>🇪🇪</span>
+                  <span>Eesti</span>
+                </button>
+              </div>
+            </transition>
+          </div>
+
           <template v-if="authStore.isAuthenticated">
             <!-- User Menu -->
             <div class="relative" ref="menuRef">
@@ -61,21 +99,21 @@
                     class="block px-4 py-2 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                     @click="showMenu = false"
                   >
-                    Dashboard
+                    {{ $t('nav.dashboard') }}
                   </router-link>
                   <router-link 
                     to="/dashboard/my-lotteries" 
                     class="block px-4 py-2 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                     @click="showMenu = false"
                   >
-                    My Lotteries
+                    {{ $t('nav.myLotteries') }}
                   </router-link>
                   <router-link 
                     to="/dashboard/my-tickets" 
                     class="block px-4 py-2 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                     @click="showMenu = false"
                   >
-                    My Tickets
+                    {{ $t('nav.myTickets') }}
                   </router-link>
                   <template v-if="authStore.isAdmin">
                     <div class="border-t border-slate-600 my-2"></div>
@@ -84,7 +122,7 @@
                       class="block px-4 py-2 text-amber-400 hover:bg-slate-700/50 transition-colors"
                       @click="showMenu = false"
                     >
-                      Admin Panel
+                      {{ $t('nav.adminPanel') }}
                     </router-link>
                   </template>
                   <div class="border-t border-slate-600 my-2"></div>
@@ -92,7 +130,7 @@
                     @click="handleLogout"
                     class="block w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700/50 transition-colors"
                   >
-                    Logout
+                    {{ $t('nav.logout') }}
                   </button>
                 </div>
               </transition>
@@ -103,13 +141,13 @@
               to="/login" 
               class="text-slate-300 hover:text-white transition-colors"
             >
-              Login
+              {{ $t('nav.login') }}
             </router-link>
             <router-link 
               to="/register" 
               class="btn-primary text-sm py-2 px-4"
             >
-              Sign Up
+              {{ $t('nav.signUp') }}
             </router-link>
           </template>
         </div>
@@ -119,14 +157,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+import { setLocale, getLocale } from '../i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { locale } = useI18n()
+
 const showMenu = ref(false)
+const showLangMenu = ref(false)
 const menuRef = ref(null)
+const langMenuRef = ref(null)
+
+const currentLocale = computed(() => locale.value)
+
+const switchLocale = (newLocale) => {
+  setLocale(newLocale)
+  showLangMenu.value = false
+}
 
 const handleLogout = async () => {
   await authStore.logout()
@@ -138,6 +189,9 @@ const handleLogout = async () => {
 const handleClickOutside = (event) => {
   if (menuRef.value && !menuRef.value.contains(event.target)) {
     showMenu.value = false
+  }
+  if (langMenuRef.value && !langMenuRef.value.contains(event.target)) {
+    showLangMenu.value = false
   }
 }
 

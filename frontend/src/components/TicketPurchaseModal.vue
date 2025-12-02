@@ -21,17 +21,17 @@
             </svg>
           </button>
 
-          <h2 class="text-2xl font-bold text-white mb-6">Buy Tickets</h2>
+          <h2 class="text-2xl font-bold text-white mb-6">{{ $t('ticketModal.title') }}</h2>
 
           <!-- Lottery Info -->
           <div class="glass rounded-xl p-4 mb-6 border border-slate-600">
             <h3 class="text-white font-semibold">{{ lottery.title }}</h3>
-            <p class="text-slate-400 text-sm mt-1">€{{ formatPrice(lottery.ticket_price) }} per ticket</p>
+            <p class="text-slate-400 text-sm mt-1">€{{ formatPrice(lottery.ticket_price) }} {{ $t('ticketModal.perTicket') }}</p>
           </div>
 
           <!-- Quantity Selector -->
           <div class="mb-6">
-            <label class="block text-slate-300 text-sm font-medium mb-2">Number of Tickets</label>
+            <label class="block text-slate-300 text-sm font-medium mb-2">{{ $t('ticketModal.numberOfTickets') }}</label>
             <div class="flex items-center space-x-4">
               <button
                 @click="decreaseQuantity"
@@ -67,7 +67,7 @@
           <!-- Total -->
           <div class="glass rounded-xl p-4 mb-6 border border-indigo-500/50">
             <div class="flex justify-between items-center">
-              <span class="text-slate-300">Total</span>
+              <span class="text-slate-300">{{ $t('ticketModal.total') }}</span>
               <span class="text-2xl font-bold text-white">€{{ formatPrice(total) }}</span>
             </div>
           </div>
@@ -78,7 +78,7 @@
               @click="$emit('close')"
               class="flex-1 btn-outline"
             >
-              Cancel
+              {{ $t('common.cancel') }}
             </button>
             <button
               @click="handlePurchase"
@@ -90,15 +90,18 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Processing...
+                {{ $t('ticketModal.processing') }}
               </span>
-              <span v-else>Buy Now</span>
+              <span v-else>{{ $t('ticketModal.buyNow') }}</span>
             </button>
           </div>
 
-          <!-- Mock Payment Notice -->
-          <p class="text-slate-500 text-xs text-center mt-4">
-            This is a demo. No real payment will be processed.
+          <!-- Stripe Payment Notice -->
+          <p class="text-slate-500 text-xs text-center mt-4 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+            </svg>
+            {{ $t('ticketModal.stripeNotice') }}
           </p>
         </div>
       </div>
@@ -108,7 +111,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useLotteryStore } from '../stores/lottery'
+import { paymentApi } from '../api'
 
 const props = defineProps({
   show: {
@@ -123,7 +126,6 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'success'])
 
-const lotteryStore = useLotteryStore()
 const quantity = ref(1)
 const loading = ref(false)
 
@@ -158,13 +160,12 @@ const increaseQuantity = () => {
 const handlePurchase = async () => {
   loading.value = true
   try {
-    await lotteryStore.purchaseTickets(props.lottery.id, quantity.value)
-    emit('success', quantity.value)
-    quantity.value = 1
+    const response = await paymentApi.createCheckoutSession(props.lottery.id, quantity.value)
+    // Redirect to Stripe Checkout
+    window.location.href = response.data.checkout_url
   } catch (error) {
     console.error('Purchase failed:', error)
-    alert(error.response?.data?.message || 'Failed to purchase tickets')
-  } finally {
+    alert(error.response?.data?.message || 'Failed to create checkout session')
     loading.value = false
   }
 }

@@ -15,6 +15,7 @@ class Ticket extends Model
         'user_id',
         'ticket_number',
         'purchased_at',
+        'stripe_session_id',
     ];
 
     protected $casts = [

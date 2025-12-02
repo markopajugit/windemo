@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
+    <h1 class="text-2xl font-bold text-white mb-6">{{ $t('dashboard.overview') }}</h1>
 
     <!-- Stats -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -27,24 +27,24 @@
       <h2 class="text-lg font-semibold text-white mb-4">Quick Actions</h2>
       <div class="flex flex-wrap gap-4">
         <router-link to="/dashboard/create-lottery" class="btn-primary">
-          Create New Lottery
+          {{ $t('myLotteries.createNew') }}
         </router-link>
         <router-link to="/browse" class="btn-outline">
-          Browse Lotteries
+          {{ $t('home.browseLotteries') }}
         </router-link>
       </div>
     </div>
 
     <!-- Recent Activity -->
     <div class="glass rounded-xl p-6 border border-slate-700/50">
-      <h2 class="text-lg font-semibold text-white mb-4">Recent Activity</h2>
+      <h2 class="text-lg font-semibold text-white mb-4">{{ $t('dashboard.recentActivity') }}</h2>
       
       <div v-if="loading" class="flex justify-center py-8">
         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
 
       <div v-else-if="recentActivity.length === 0" class="text-center py-8">
-        <p class="text-slate-400">No recent activity</p>
+        <p class="text-slate-400">{{ $t('dashboard.noActivity') }}</p>
       </div>
 
       <div v-else class="space-y-4">

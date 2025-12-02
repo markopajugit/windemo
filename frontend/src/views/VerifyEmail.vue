@@ -10,10 +10,9 @@
             </svg>
           </div>
 
-          <h1 class="text-2xl font-bold text-white mb-4">Verify Your Email</h1>
+          <h1 class="text-2xl font-bold text-white mb-4">{{ $t('verifyEmail.title') }}</h1>
           <p class="text-slate-400 mb-6">
-            We've sent a verification link to <span class="text-white font-medium">{{ authStore.user?.email }}</span>. 
-            Please check your inbox and click the link to verify your account.
+            {{ $t('verifyEmail.message') }} (<span class="text-white font-medium">{{ authStore.user?.email }}</span>)
           </p>
 
           <div v-if="message" class="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 text-sm mb-6">
@@ -29,13 +28,13 @@
             :disabled="resending || cooldown > 0"
             class="btn-outline w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="resending">Sending...</span>
-            <span v-else-if="cooldown > 0">Resend in {{ cooldown }}s</span>
-            <span v-else>Resend Verification Email</span>
+            <span v-if="resending">{{ $t('verifyEmail.resending') }}</span>
+            <span v-else-if="cooldown > 0">{{ cooldown }}s</span>
+            <span v-else>{{ $t('verifyEmail.resend') }}</span>
           </button>
 
           <router-link to="/dashboard" class="block mt-4 text-slate-400 hover:text-white">
-            Continue to Dashboard
+            {{ $t('nav.dashboard') }}
           </router-link>
         </template>
 

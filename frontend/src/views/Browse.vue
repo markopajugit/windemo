@@ -2,7 +2,7 @@
   <div>
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-      <h1 class="text-3xl font-bold text-white mb-4 md:mb-0">Browse Lotteries</h1>
+      <h1 class="text-3xl font-bold text-white mb-4 md:mb-0">{{ $t('browse.title') }}</h1>
       
       <!-- Search & Filters (only for Live tab) -->
       <div v-if="activeTab === 'live'" class="flex flex-col sm:flex-row gap-4">
@@ -10,7 +10,7 @@
           <input
             v-model="search"
             type="text"
-            placeholder="Search lotteries..."
+            :placeholder="$t('browse.searchPlaceholder')"
             class="input-field !pl-12 w-full sm:w-64"
             @input="debouncedSearch"
           />
@@ -20,18 +20,18 @@
         </div>
 
         <select v-model="category" @change="fetchLotteries" class="input-field w-full sm:w-48">
-          <option value="all">All Categories</option>
+          <option value="all">{{ $t('browse.allCategories') }}</option>
           <option v-for="(label, value) in categories" :key="value" :value="value">
             {{ label }}
           </option>
         </select>
         
         <select v-model="sortBy" @change="fetchLotteries" class="input-field w-full sm:w-48">
-          <option value="newest">Newest First</option>
-          <option value="ending_soon">Ending Soon</option>
+          <option value="newest">{{ $t('browse.sortNewest') }}</option>
+          <option value="ending_soon">{{ $t('browse.sortEndingSoon') }}</option>
           <option value="popular">Most Popular</option>
-          <option value="price_low">Price: Low to High</option>
-          <option value="price_high">Price: High to Low</option>
+          <option value="price_low">{{ $t('browse.sortPriceAsc') }}</option>
+          <option value="price_high">{{ $t('browse.sortPriceDesc') }}</option>
         </select>
       </div>
     </div>
@@ -100,8 +100,8 @@
         <svg class="w-20 h-20 mx-auto text-slate-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p class="text-slate-400 text-xl mb-2">No live lotteries right now</p>
-        <p class="text-slate-500 mb-4">Check out the upcoming lotteries!</p>
+        <p class="text-slate-400 text-xl mb-2">{{ $t('browse.noLotteries') }}</p>
+        <p class="text-slate-500 mb-4">{{ $t('browse.tryDifferent') }}</p>
         <button 
           @click="activeTab = 'upcoming'"
           class="px-4 py-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/40 hover:bg-amber-500/30 transition-colors"

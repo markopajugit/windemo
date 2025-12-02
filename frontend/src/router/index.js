@@ -35,6 +35,16 @@ const routes = [
     component: () => import('../views/VerifyEmail.vue'),
   },
   {
+    path: '/payment/success',
+    name: 'payment-success',
+    component: () => import('../views/PaymentSuccess.vue'),
+  },
+  {
+    path: '/payment/cancel',
+    name: 'payment-cancel',
+    component: () => import('../views/PaymentCancel.vue'),
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('../views/Dashboard.vue'),

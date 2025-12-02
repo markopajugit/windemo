@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LotteryController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Stripe webhook (no auth required)
+Route::post('/webhook/stripe', [PaymentController::class, 'handleWebhook']);
 
 // Public lottery routes
 Route::get('/lotteries', [LotteryController::class, 'index']);
@@ -41,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Tickets
     Route::post('/lotteries/{lottery}/tickets', [TicketController::class, 'purchase'])->middleware('verified')->where('lottery', '[0-9]+');
     Route::get('/user/tickets', [TicketController::class, 'userTickets']);
+
+    // Stripe checkout
+    Route::post('/checkout/{lottery}/session', [PaymentController::class, 'createCheckoutSession'])->middleware('verified')->where('lottery', '[0-9]+');
+    Route::get('/checkout/verify', [PaymentController::class, 'verifySession']);
 
     // Admin routes
     Route::prefix('admin')->middleware('admin')->group(function () {
